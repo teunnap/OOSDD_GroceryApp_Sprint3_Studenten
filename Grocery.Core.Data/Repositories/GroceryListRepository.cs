@@ -21,7 +21,10 @@ namespace Grocery.Core.Data.Repositories
         }
         public GroceryList Add(GroceryList item)
         {
-            throw new NotImplementedException();
+            int nextId = groceryLists.Count == 0 ? 1 : groceryLists.Max(g => g.Id) + 1;
+            GroceryList newItem = new(nextId, item.Name, item.Date, item.Color, item.ClientId);
+            groceryLists.Add(newItem);
+            return newItem;
         }
 
         public GroceryList? Delete(GroceryList item)
