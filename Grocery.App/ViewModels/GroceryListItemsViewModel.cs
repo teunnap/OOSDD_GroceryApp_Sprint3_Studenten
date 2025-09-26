@@ -6,6 +6,7 @@ using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace Grocery.App.ViewModels
 {
@@ -18,6 +19,7 @@ namespace Grocery.App.ViewModels
         
         public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
         public ObservableCollection<Product> AvailableProducts { get; set; } = [];
+        private List<Product> allAvailableProducts = new();
 
         [ObservableProperty]
         GroceryList groceryList = new(0, "None", DateOnly.MinValue, "", 0);
@@ -42,9 +44,23 @@ namespace Grocery.App.ViewModels
         private void GetAvailableProducts()
         {
             AvailableProducts.Clear();
-            foreach (Product p in _productService.GetAll())
-                if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null  && p.Stock > 0)
-                    AvailableProducts.Add(p);
+            allAvailableProducts = _productService.GetAll()
+                .Where(p => MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null && p.Stock > 0)
+                .ToList();
+            foreach (var p in allAvailableProducts) AvailableProducts.Add(p);
+        }
+
+        [RelayCommand]
+        public void Search(string searchTerm)
+        {
+            AvailableProducts.Clear();
+            IEnumerable<Product> result = allAvailableProducts;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                string term = searchTerm.Trim();
+                result = allAvailableProducts.Where(p => p.Name.Contains(term, StringComparison.OrdinalIgnoreCase));
+            }
+            foreach (var p in result) AvailableProducts.Add(p);
         }
 
         partial void OnGroceryListChanged(GroceryList value)
