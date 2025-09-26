@@ -10,8 +10,5 @@ Aanvullen:
 - Zorg dat de SearchCommand wordt gebonden aan een functie in het onderliggende ViewModel (GroceryListItemsViewModel) en dat de zoekterm die in het zoekveld is ingetypt gebruikt wordt als parameter (SearchCommandParameter).  
 - Werk in het viewModel (GroceryListItemsViewModel) de zoekfunctie uit en zorg dat de beschikbare producten worden gefilterd op de zoekterm!  
 
-## UCx Registratie gebruiker 
-Of een ander idee zelf uitwerken. Dit betekent ook dat de documentatie hiervoor ontwikkeld moet worden.
-
-  
-
+## UC9 Toevoegen Boodschappenlijst
+De gebruiker kan een nieuwe boodschappenlijst toevoegen.
