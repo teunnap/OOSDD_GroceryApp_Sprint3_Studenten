@@ -17,7 +17,15 @@ namespace Grocery.Core.Services
         }
         public GroceryList Add(GroceryList item)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(item.Name))
+            {
+                throw new ArgumentException("Naam is leeg", nameof(item.Name));
+            }
+            if (_groceryRepository.GetAll().Any(g => string.Equals(g.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException($"Lijst genaamd ({item.Name}) bestaat al");
+            }
+            return _groceryRepository.Add(item);
         }
 
         public GroceryList? Delete(GroceryList item)

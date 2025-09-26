@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Grocery.App.ViewModels
 {
@@ -15,7 +16,8 @@ namespace Grocery.App.ViewModels
         {
             Title = "Boodschappenlijst";
             _groceryListService = groceryListService;
-            GroceryLists = new(_groceryListService.GetAll());
+            GroceryLists = new();
+            RefreshLists();
         }
 
         [RelayCommand]
@@ -27,13 +29,40 @@ namespace Grocery.App.ViewModels
         public override void OnAppearing()
         {
             base.OnAppearing();
-            GroceryLists = new(_groceryListService.GetAll());
+            RefreshLists();
         }
 
         public override void OnDisappearing()
         {
             base.OnDisappearing();
             GroceryLists.Clear();
+        }
+
+        private void RefreshLists()
+        {
+            var all = _groceryListService.GetAll();
+            GroceryLists.Clear();
+            foreach (var g in all) GroceryLists.Add(g);
+        }
+
+        [RelayCommand]
+        public async Task NewList()
+        {
+            string name = await Shell.Current.DisplayPromptAsync("Nieuwe lijst", "Voer een naam in:", "OK", "Annuleren", "Naam", maxLength: 100, keyboard: Keyboard.Text);
+            if (name == null) return; // 3a: geannuleerd
+            name = name.Trim();
+            if (name.Length == 0) return; // leeg, negeren
+
+            try
+            {
+                GroceryList created = _groceryListService.Add(new GroceryList(0, name, DateOnly.FromDateTime(DateTime.Now), "#626262", 1));
+                // Update overzicht
+                GroceryLists.Add(created);
+            }
+            catch (InvalidOperationException ex)
+            {
+                await Shell.Current.DisplayAlert("Melding", ex.Message, "OK");
+            }
         }
     }
 }
