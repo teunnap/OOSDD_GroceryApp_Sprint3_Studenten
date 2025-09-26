@@ -5,6 +5,9 @@
              xmlns:vm="clr-namespace:Grocery.App.ViewModels"
              xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
              Title="GroceryListsView">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Nieuwe lijst" Command="{Binding NewListCommand}" />
+    </ContentPage.ToolbarItems>
     <Shell.TitleView>
         <Grid>
             <Label Text="Boodschappenlijsten" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
