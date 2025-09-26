@@ -42,9 +42,23 @@ namespace Grocery.App.ViewModels
         private void GetAvailableProducts()
         {
             AvailableProducts.Clear();
-            foreach (Product p in _productService.GetAll())
-                if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null  && p.Stock > 0)
-                    AvailableProducts.Add(p);
+            allAvailableProducts = _productService.GetAll()
+                .Where(p => MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null && p.Stock > 0)
+                .ToList();
+            foreach (var p in allAvailableProducts) AvailableProducts.Add(p);
+        }
+
+        [RelayCommand]
+        public void Search(string searchTerm)
+        {
+            AvailableProducts.Clear();
+            IEnumerable<Product> result = allAvailableProducts;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                string term = searchTerm.Trim();
+                result = allAvailableProducts.Where(p => p.Name.Contains(term, StringComparison.OrdinalIgnoreCase));
+            }
+            foreach (var p in result) AvailableProducts.Add(p);
         }
 
         partial void OnGroceryListChanged(GroceryList value)
